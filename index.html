@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="de" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kulinarische Galerie | Exquisite Rezepte</title>
+    
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header>
+    <h1>Kulinarische Galerie</h1>
+    <p>Entdecken Sie unsere handverlesenen Rezepte</p>
+</header>
+
+<div class="container">
+    <div class="controls">
+        <input type="text" id="search" placeholder="Suche nach Rezepten...">
+        <select id="filter">
+            <option value="Alle">Alle Kategorien</option>
+            <option value="Hauptspeise">Hauptspeise</option>
+            <option value="Dessert">Dessert</option>
+            <option value="Vegetarisch">Vegetarisch</option>
+        </select>
+    </div>
+
+    <div class="gallery" id="gallery"></div>
+</div>
+
+<div class="modal" id="modal">
+    <div class="modal-content">
+        <span class="close" id="close">&times;</span>
+        <h2 id="modal-title"></h2>
+        <p id="modal-desc"></p>
+    </div>
+</div>
+
+<script>
+    const recipes = [
+        { id: 1, title: "Wiener Schnitzel", category: "Hauptspeise", desc: "Klassisches Kalbsschnitzel mit Kartoffelsalat." },
+        { id: 2, title: "Apfelstrudel", category: "Dessert", desc: "Traditioneller Strudel mit Äpfeln und Zimt." },
+        { id: 3, title: "Gemüse-Curry", category: "Vegetarisch", desc: "Frisches saisonales Gemüse in Kokos-Curry-Soße." },
+        { id: 4, title: "Käsespätzle", category: "Vegetarisch", desc: "Hausgemachte Spätzle mit würzigem Bergkäse." }
+    ];
+
+    const gallery = document.getElementById('gallery');
+    const search = document.getElementById('search');
+    const filter = document.getElementById('filter');
+    const modal = document.getElementById('modal');
+
+    function render(data) {
+        gallery.innerHTML = data.map(r => `
+            <div class="card" onclick="openModal(${r.id})">
+                <div class="card-content">
+                    <span class="badge">${r.category}</span>
+                    <h3>${r.title}</h3>
+                    <p>${r.desc.substring(0, 50)}...</p>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function openModal(id) {
+        const recipe = recipes.find(r => r.id === id);
+        document.getElementById('modal-title').innerText = recipe.title;
+        document.getElementById('modal-desc').innerText = recipe.desc;
+        modal.style.display = 'flex';
+    }
+
+    document.getElementById('close').onclick = () => modal.style.display = 'none';
+
+    function filterRecipes() {
+        const term = search.value.toLowerCase();
+        const cat = filter.value;
+        const filtered = recipes.filter(r => 
+            (r.title.toLowerCase().includes(term) || r.desc.toLowerCase().includes(term)) &&
+            (cat === 'Alle' || r.category === cat)
+        );
+        render(filtered);
+    }
+
+    search.addEventListener('input', filterRecipes);
+    filter.addEventListener('change', filterRecipes);
+
+    render(recipes);
+</script>
+</body>
+</html>
